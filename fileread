@@ -1,9 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct foruser{
+char id[50] ;
+char signtime[50];
+char* screenname[50];
+}foruser;
+typedef struct forfriends{
+char* myid[50];
+char* friendsid[50];
+}forfriends;
+typedef struct forword{
+char* userid[50];
+char* time[50];
+char* word[50];
+}forword;
 int main()
 {   //open files
-    int i,ch;
     FILE * user = fopen("user.txt","rt");
     FILE * friends = fopen("friend.txt","rt");
     FILE * word = fopen("word.txt","rt");
@@ -22,23 +35,16 @@ int main()
     }
 
   //read files
+
    while(!feof(user))
     {
-        printf("%c",fgetc(user));
-    }
-
-    return 0;
-}
-   while(!feof(friends))
-    {
-        printf("%c",fgetc(friends));
-    }
-
-    return 0;
-}
-   while(!feof(word))
-    {
-        printf("%c",fgetc(word));
+        foruser user1;
+        fgets(user1.id,10,user);
+        fgets(user1.signtime,50,user);
+        fgets(user1.screenname,50,user);
+       printf("%s\n",user1.id);
+       printf("%s\n",user1.signtime);
+       printf("%s\n",user1.screenname);
     }
 
     return 0;
