@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{   //open files
+    int i,ch;
+    FILE * user = fopen("user.txt","rt");
+    FILE * friends = fopen("friend.txt","rt");
+    FILE * word = fopen("word.txt","rt");
+
+    if(user == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+    if(friends == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+    if(word == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+
+  //read files
+   while(!feof(user))
+    {
+        printf("%c",fgetc(user));
+    }
+
+    return 0;
+}
+   while(!feof(friends))
+    {
+        printf("%c",fgetc(friends));
+    }
+
+    return 0;
+}
+   while(!feof(word))
+    {
+        printf("%c",fgetc(word));
+    }
+
+    return 0;
+}
