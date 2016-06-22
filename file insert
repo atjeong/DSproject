@@ -2,17 +2,24 @@
 #include <stdlib.h>
 
 int main()
-{   int i,ch;
+{   //open files
+    int i,ch;
     FILE * user = fopen("user.txt","rt");
-
+    FILE * friends = fopen("friend.txt","rt");
+    FILE * word = fopen("word.txt","rt");
     if(user == NULL){
-        printf("notcomplete!");
+        printf("user_not_load!");
         return -1;
     }
-    for(i=0; i<3; i++){
-        ch = fgetc(user);
-        printf("%c \n", ch);
+    if(friends == NULL){
+        printf("user_not_load!");
+        return -1;
     }
+    if(word == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+
 
     return 0;
 }
