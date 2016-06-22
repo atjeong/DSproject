@@ -36,15 +36,17 @@ int main()
 
   //read files
 
-   while(!feof(user))
+   while(1)
     {
         foruser user1;
-        fgets(user1.id,10,user);
+        fgets(user1.id,50,user);
         fgets(user1.signtime,50,user);
         fgets(user1.screenname,50,user);
-       printf("%s\n",user1.id);
-       printf("%s\n",user1.signtime);
-       printf("%s\n",user1.screenname);
+        fgetc(user);
+        if(feof(user)) break;
+       printf("id: %s\n",user1.id);
+       printf("sign : %s\n",user1.signtime);
+       printf("screen: %s\n",user1.screenname);
     }
 
     return 0;
