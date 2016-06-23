@@ -110,7 +110,7 @@ list.header= NULL;
 read_data_files();
 display_statistics();
  top5_max_tweeted_search(&list);
-
+ top5_most_tweeted_users();
     return 0;
 }
 
@@ -223,57 +223,58 @@ while(1)
         printf("Minimum tweets per user: %d\n",min);
         printf("Maximum tweets per user: %d\n",max);
     }
-/*
+
   void merge_words(List* lists, int p, int q, int r){
-        List list2; list2.header = NULL;
-        List list3; list3.header = NULL;
+        int i;
+        List* list2 = (List*)malloc(sizeof(List)); list2->header = NULL;
+        List* list3 = (List*)malloc(sizeof(List)); list3->header = NULL;
         node* x = lists->header;
+        for(i=0; i<p;i++) x = x->next;
         int n1 = q-p+1;
         int n2 = r-q;
         int j=0,k=0;
-        int i;
+
         for(i=0; i<n1; i++){
             node* copy = (node*)malloc(sizeof(node));
             copying(copy,x);
-            insert(&list2,copy);
+            insert(list2,copy);
             x= x->next;
         }
         for(i=0; i<n2; i++){
             node* copy = (node*)malloc(sizeof(node));
             copying(copy,x);
-            insert(&list3,copy);
+            insert(list3,copy);
             x= x->next;
         }
 
-        node* x1 = list2.header;
-        node* x2 = list3.header;
+        x= lists->header;
+        for(i=0; i<p;i++)
+            x = x->next;
+        node* x1 = list2->header;
+        node* x2 = list3->header;
+
         while(j<n1&& k<n2){
-            if(x1->numofwords > x2->numofwords){
-                node* copy = (node*)malloc(sizeof(node));
-                copying(copy,x2);
-                insert(lists,copy);
-                x2 = x2->next; k++;
+            if(x1->numofwords >= x2->numofwords){
+                copying(x,x1);
+                x1 = x1->next; j++;
             }
             else{
-                node* copy = (node*)malloc(sizeof(node));
-                copying(copy,x1);
-                insert(lists,copy);
-                x1= x1->next; j++;
+                copying(x,x2);
+                x2= x2->next; k++;
             }
+             x= x->next;
         }
 
-           while(j<n1){
-                node* copy = (node*)malloc(sizeof(node));
-                copying(copy,x1);
-                insert(lists,copy);
-                x1= x1->next; j++;
+           for(;j<n1;j++){
+                copying(x,x1);
+                x1= x1->next;
+                x= x->next;
             }
 
-         while(k<n2){
-                node* copy = (node*)malloc(sizeof(node));
-                copying(copy,x2);
-                insert(lists,copy);
-                x2= x2->next; k++;
+         for(;k<n2;k++){
+                copying(x,x2);
+                x2= x2->next;
+                 x= x->next;
             }
 
   }
@@ -290,12 +291,13 @@ while(1)
 
 
  void copying(node* fake, node* org){
+
      fake->friendsid = org->friendsid;
      strcpy(fake->id , org->id);
-     fake->next = org->next;
+    // fake->next = org->next;
      fake->numoffriends = org ->numoffriends;
      fake->numofwords = org ->numofwords;
-     fake->prev = org -> prev;
+   //  fake->prev = org -> prev;
      strcpy(fake ->screenname, org->screenname);
      strcpy(fake->signtime, org->signtime);
      fake->word = fake ->word;
@@ -303,14 +305,14 @@ while(1)
  }
 
  void top5_most_tweeted_users(){
- int i;
- node* who = list.header;
- for(i=1; i<6; i++){
-    who = max_word_search();
-    printf("top %d : user %s %s tweeted %d times\n",i, who->id, who->screenname, who->numofwords);
+    mergesort_words(&list, 0, user_num-1);
+    int i;
+    node* who = list.header;
+    for(i=1; i<6; i++){
+    printf("top %d : user %s %s tweeted %d times\n",i, who->screenname, who->id, who->numofwords); who = who->next;
  }
 
- } */
+ }
 
     void top5_max_tweeted_search(struct List* list){
         node* x = list->header;
@@ -319,7 +321,7 @@ while(1)
         while (x!= NULL){
             if(x->numofwords > max1) { find = x; max1 = x->numofwords;}
             x = x->next;}
-        printf("top1 is %s :tweet %d times\n",find->screenname,max1);
+        printf("top1 is %s :tweet %d times\n",find->id,max1);
 
         x = list->header;
         int max2 = 0;
