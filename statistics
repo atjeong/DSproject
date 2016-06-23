@@ -13,7 +13,7 @@ char friendsid[50];
 typedef struct forword{
 char userid[50];
 char time[50];
-char word[150];
+char word[1000];
 struct forword* next;
 }forword;
 
@@ -22,7 +22,7 @@ typedef struct Adj {
   struct Adj* next;
 } Adj;
 typedef struct Adj2 {
-  char word[150];
+  char word[1000];
   struct Adj2* next;
 } Adj2;
 
@@ -101,12 +101,12 @@ node* search(struct List* list, char* id){
 
 List list;
 int user_num, friends_num , word_num,i;
+
 int main()
 {
 
 int select;
 list.header= NULL;
-
 read_data_files();
 display_statistics();
 
@@ -159,7 +159,6 @@ user_num=0, friends_num =0, word_num=0,i;
         fgets(friends1->friendsid,50,friends);
         fgetc(friends);
         if(feof(friends)) break; friends_num++;
-        printf("%d:       %s",friends_num, friends1->friendsid);
         node* temp_node = search(&list,friends1->myid);
         Adj* a = (Adj *)malloc(sizeof(Adj));
         strcpy(a->id ,friends1->friendsid);
@@ -168,30 +167,29 @@ user_num=0, friends_num =0, word_num=0,i;
         temp_node->numoffriends++;
         free(friends1);
     }
-/*
+
 while(1)
     {
         forword word1;
         fgets(word1.userid,50,word);
         fgets(word1.time,50,word);
-        fgets(word1.word,150,word);
+        fgets(word1.word,1000,word);
         fgetc(word);
         if(feof(word)) break; word_num++;
-         printf("%s:   %s",word1.userid,word1.word);
         node* temp_node = search(&list,word1.userid);
         Adj2* a = (Adj2*)malloc(sizeof(Adj2));
         strcpy(a->word ,word1.word);
         a->next = temp_node->word;
         temp_node->word = a;
-        temp_node->numofwords_+;
+        temp_node->numofwords++;
 
-    }
-*/forword* word1= (forword*)malloc(sizeof(forword));
+ }
+/*forword* word1= (forword*)malloc(sizeof(forword));
    while(1)
     {
         fgets(word1->userid,50,word);
         fgets(word1->time,50,word);
-        fgets(word1->word,150,word);
+        fgets(word1->word,1000,word);
         fgetc(word);
         if(feof(word)) break; word_num++;
         printf("%s:   %s",word1->userid,word1->word);
@@ -201,7 +199,7 @@ while(1)
         a->next = temp_node->word;
         temp_node->word = a;
         temp_node->numofwords++;
-    }free(word1);
+    }free(word1);*/
 
     printf("Total users: %d\n",user_num);
     printf("Total friendship records: %d\n", friends_num);
@@ -224,4 +222,6 @@ while(1)
         printf("Minimum tweets per user: %d\n",min);
         printf("Maximum tweets per user: %d\n",max);
     }
+
+
 
