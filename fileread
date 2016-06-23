@@ -35,7 +35,8 @@ int main()
     }
 
   //read files
-   while(1)
+  int user_num=0, friends_num =0, word_num=0,i;
+  while(1)
     {
         foruser user1;
         fgets(user1.id,50,user);
@@ -43,7 +44,9 @@ int main()
         fgets(user1.screenname,50,user);
         fgetc(user);
         if(feof(user)) break;
-       printf("id: %s\n",user1.id);
+        user_num++;
+        printf("%d\n",user_num);
+       printf("id: %s\n", user1.id);
        printf("sign : %s\n",user1.signtime);
        printf("screen: %s\n",user1.screenname);
     }
@@ -54,8 +57,8 @@ int main()
         fgets(friends1.myid,50,friends);
         fgets(friends1.friendsid,50,friends);
         fgetc(friends);
-        if(feof(friends)) break;
-       printf("myid: %s\n",friends1.myid);
+        if(feof(friends)) break; friends_num++;
+       printf("%d  myid: %s\n",friends_num, friends1.myid);
        printf("friendsid: %s\n",friends1.friendsid);
     }
 
@@ -67,12 +70,11 @@ int main()
         fgets(word1.time,50,word);
         fgets(word1.word,50,word);
         fgetc(word);
-        if(feof(word)) break;
-       printf("id: %s\n",word1.userid);
+        if(feof(word)) break; word_num++;
+       printf("%d  id: %s\n",word_num,word1.userid);
        printf("time : %s\n",word1.time);
        printf("word: %s\n",word1.word);
     }
-
 
 
 
