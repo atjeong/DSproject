@@ -4,19 +4,31 @@
 typedef struct foruser{
 char id[50] ;
 char signtime[50];
-char* screenname[50];
+char screenname[50];
 }foruser;
 typedef struct forfriends{
-char* myid[50];
-char* friendsid[50];
+char myid[50];
+char friendsid[50];
 }forfriends;
 typedef struct forword{
-char* userid[50];
-char* time[50];
-char* word[50];
+char userid[50];
+char time[50];
+char word[50];
 }forword;
 int main()
 {   //open files
+
+
+ read_data_files();
+
+
+
+    return 0;
+}
+
+
+   void read_data_files(){
+
     FILE * user = fopen("user.txt","rt");
     FILE * friends = fopen("friend.txt","rt");
     FILE * word = fopen("word.txt","rt");
@@ -33,8 +45,7 @@ int main()
         printf("user_not_load!");
         return -1;
     }
-
-  //read files
+      //read files
   int user_num=0, friends_num =0, word_num=0,i;
   while(1)
     {
@@ -45,10 +56,6 @@ int main()
         fgetc(user);
         if(feof(user)) break;
         user_num++;
-        printf("%d\n",user_num);
-       printf("id: %s\n", user1.id);
-       printf("sign : %s\n",user1.signtime);
-       printf("screen: %s\n",user1.screenname);
     }
 
    while(1)
@@ -58,8 +65,7 @@ int main()
         fgets(friends1.friendsid,50,friends);
         fgetc(friends);
         if(feof(friends)) break; friends_num++;
-       printf("%d  myid: %s\n",friends_num, friends1.myid);
-       printf("friendsid: %s\n",friends1.friendsid);
+
     }
 
 
@@ -71,12 +77,10 @@ int main()
         fgets(word1.word,50,word);
         fgetc(word);
         if(feof(word)) break; word_num++;
-       printf("%d  id: %s\n",word_num,word1.userid);
-       printf("time : %s\n",word1.time);
-       printf("word: %s\n",word1.word);
     }
 
+    printf("Total users: %d\n",user_num);
+    printf("Total friendship records: %d\n", friends_num);
+    printf("Total tweets: %d\n", word_num);
 
-
-    return 0;
-}
+    }
