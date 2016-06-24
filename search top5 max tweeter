@@ -144,6 +144,7 @@ display_statistics();
         printf("user_not_load!");
         return -1;
     }
+    
     //read files
 user_num=0, friends_num =0, word_num=0,i;
   while(1)
