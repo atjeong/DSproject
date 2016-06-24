@@ -1,0 +1,523 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct foruser{
+char id[50] ;
+char signtime[50];
+char screenname[50];
+}foruser;
+typedef struct forfriends{
+char myid[50];
+char friendsid[50];
+}forfriends;
+typedef struct forword{
+char userid[50];
+char time[50];
+char word[1000];
+struct forword* next;
+}forword;
+
+typedef struct Adj {
+  char id[50];
+  struct Adj* next;
+} Adj;
+typedef struct Adj2 {
+  char word[1000];
+  struct Adj2* next;
+} Adj2;
+
+typedef struct node{
+    char id[50];
+    char signtime[50];
+    char screenname[50];
+    Adj* friendsid;
+    Adj2* word;
+    struct node* next;
+    struct node* prev;
+    int numoffriends;
+    int numofwords;
+}node;
+
+typedef struct wordnode{
+    char wordname[1000];
+    Adj* whoissiad;
+    struct wordnode* next;
+    struct wordnode* prev;
+    int numofword;
+} wordnode;
+
+void initial(node* node){
+    node->friendsid= NULL;
+    node->word = NULL;
+    node->next = NULL;
+    node->prev= NULL;
+    node->numoffriends=0;
+    node->numofwords = 0;
+}
+void initialize(wordnode* node){
+    node->whoissiad = NULL;
+    node->next = NULL;
+    node->prev= NULL;
+    node->numofword=0;
+}
+
+
+typedef struct List{
+    node* header;
+    node* last;
+}List;
+
+
+typedef struct wordList{
+    wordnode* header;
+    wordnode* last;
+}wordList;
+
+
+void insert(struct List* lists, struct node* node){
+    node->next = lists->header;
+    if(lists->header != NULL)
+        lists->header->prev = node;
+    lists->header = node;
+    node->prev = NULL;
+    }
+
+
+ void   insert_wordnode(struct wordList* lists,struct wordnode* node){
+     node->next = lists->header;
+    if(lists->header != NULL)
+        lists->header->prev = node;
+    lists->header = node;
+    node->prev = NULL;
+ }
+
+void insert_bylast(struct List* lists, struct node* node){
+    node->next = NULL;
+    if(lists->last != NULL)
+        lists->last->next = node;
+    else lists->header = node;
+    node->prev = lists->last;
+    lists->last = node;
+    }
+
+ void   insert_wordnode_bylast(struct wordList* lists,struct wordnode* node){
+    node->next = NULL;
+    if(lists->last != NULL)
+        lists->last->next = node;
+    else lists->header = node;
+    node->prev = lists->last;
+    lists->last = node;
+ }
+
+node* search(struct List* list, char* id){
+    node* x = list->header;
+    while (x!= NULL && strcmp(x->id,id)!= 0)
+        x = x->next;
+    return x;
+    }
+
+wordnode* searchword(struct wordList* lists,char* word){
+     wordnode* x = lists->header;
+     while(x!=NULL && strcmp(x->wordname,word)!=0)
+        x= x->next;
+    return x;
+    }
+
+Adj* searchid(struct Adj* lists,char* id){
+    Adj* x = lists;
+    while (x!= NULL && strcmp(x->id,id)!= 0)
+        x = x->next;
+    return x;
+    }
+int min_friend_search(struct List* list){
+        node* x = list->header;
+        int min = x->numoffriends;
+        while (x!= NULL){
+            if(x->numoffriends < min) min = x->numoffriends;
+            x = x->next;}
+        return min;
+    }
+    int min_word_search(struct List* list){
+        node* x = list->header;
+        int min = x->numofwords;
+        while (x!= NULL){
+            if(x->numofwords < min) min = x->numofwords;
+            x = x->next;}
+        return min;
+    }
+   int max_friend_search(struct List* list){
+        node* x = list->header;
+        int max = x->numoffriends;
+        while (x!= NULL){
+            if(x->numoffriends > max) max = x->numoffriends;
+            x = x->next;}
+        return max;
+    }
+    int max_word_search(struct List* list){
+        node* x = list->header;
+        int max = x->numofwords;
+        while (x!= NULL){
+            if(x->numofwords > max) max = x->numofwords;
+            x = x->next;}
+        return max;
+    }
+
+List list; List yeonsei; wordList wordslist;
+int user_num, friends_num , word_num,i, kindwords;
+
+int main()
+{
+
+    int select;
+    list.header= NULL;
+    yeonsei.header = NULL;
+    wordslist.header = NULL;
+
+read_data_files(); //0
+display_statistics(); //1
+top5_max_tweeted_word();//2
+// top5_max_tweeted_search(&list); //3
+top5_most_tweeted_users(); //3
+char* str = "@\n";
+display_who_said_it(str); //4
+
+    return 0;
+}
+
+
+   void read_data_files(){
+
+  //open files
+    FILE * user = fopen("user.txt","rt");
+    FILE * friends = fopen("friend.txt","rt");
+    FILE * word = fopen("word.txt","rt");
+
+    if(user == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+    if(friends == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+    if(word == NULL){
+        printf("user_not_load!");
+        return -1;
+    }
+
+    //read files
+user_num=0, friends_num =0, word_num=0,i, kindwords=0;
+
+  while(1)
+    {
+        foruser* user1= (foruser*)malloc(sizeof(foruser));
+        fgets(user1->id,50,user);
+        fgets(user1->signtime,50,user);
+        fgets(user1->screenname,50,user);
+        fgetc(user);
+        if(feof(user)) break; user_num++;
+        //new node insert
+        node* node1 = (node*)malloc(sizeof(node)); initial(node1);
+        strcpy(node1->id ,user1->id);
+        strcpy(node1->signtime,user1->signtime);
+        strcpy(node1->screenname, user1->screenname);
+        insert(&list, node1);
+        free(user1);
+    }
+
+  while(1)
+    {
+        forfriends* friends1 = (forfriends*)malloc(sizeof(forfriends));
+        fgets(friends1->myid,50,friends);
+        fgets(friends1->friendsid,50,friends);
+        fgetc(friends);
+        if(feof(friends)) break; friends_num++;
+        node* temp_node = search(&list,friends1->myid);
+        Adj* a = (Adj *)malloc(sizeof(Adj));
+        strcpy(a->id ,friends1->friendsid);
+        a->next = temp_node->friendsid;
+        temp_node->friendsid = a;
+        temp_node->numoffriends++;
+        free(friends1);
+    }
+
+while(1)
+    {
+        forword word1;
+        fgets(word1.userid,50,word);
+        fgets(word1.time,50,word);
+        fgets(word1.word,1000,word);
+        fgetc(word);
+        if(feof(word)) break; word_num++;
+        node* temp_node = search(&list,word1.userid);
+        Adj2* a = (Adj2*)malloc(sizeof(Adj2));
+        strcpy(a->word ,word1.word);
+        a->next = temp_node->word;
+        temp_node->word = a;
+        temp_node->numofwords++;
+
+    wordnode* temporary =searchword(&wordslist,word1.word);
+
+        if(temporary!=NULL){
+            temporary->numofword++;
+            if(searchid(temporary->whoissiad , word1.userid)==NULL){
+                Adj* aa = (Adj*)malloc(sizeof(Adj));
+                strcpy(aa->id,word1.userid);
+                aa->next = temporary->whoissiad;
+                temporary->whoissiad = aa;
+            }
+        }
+        else{ kindwords++;
+            wordnode* wordn = (wordnode*)malloc(sizeof(wordnode));
+            initialize(wordn);
+            wordn->numofword++;
+            strcpy(wordn->wordname ,word1.word);
+            Adj* aa = (Adj*)malloc(sizeof(Adj));
+            strcpy(aa->id,word1.userid);
+            wordn->whoissiad = aa;
+            insert_wordnode(&wordslist,wordn);
+        }
+ }
+
+    printf("Total users: %d\n",user_num);
+    printf("Total friendship records: %d\n", friends_num);
+    printf("Total tweets: %d\n", word_num);
+
+    }
+
+   void display_statistics(){
+        int min, max;
+        float average_friends = friends_num/user_num;
+        printf("Average number of friends: %f\n",average_friends);
+        min = min_friend_search(&list);
+        max = max_friend_search(&list);
+        printf("Minimum friends: %d\n", min);
+        printf("Maximum number of friends: %d\n",max);
+
+        float average_words = word_num/user_num;
+        printf("Average tweets per user: %f\n", average_words);
+        min = min_word_search(&list); max = max_word_search(&list);
+        printf("Minimum tweets per user: %d\n",min);
+        printf("Maximum tweets per user: %d\n",max);
+    }
+
+  void merge_words(List* lists, int p, int q, int r){
+        int i;
+        List* list2 = (List*)malloc(sizeof(List)); list2->header = NULL; list2->last = NULL;
+        List* list3 = (List*)malloc(sizeof(List)); list3->header = NULL; list3->last = NULL;
+
+        node* x = lists->header;
+        for(i=0; i<p;i++) x = x->next; //x는 p번째.
+        int j=0,k=0;
+
+        for(i=p; i<q+1; i++){
+            node* copy = (node*)malloc(sizeof(node));
+            copying(copy,x);
+            insert_bylast(list2,copy);
+            x= x->next;
+        }
+
+        for(i=q+1; i<r+1; i++){
+            node* copy = (node*)malloc(sizeof(node));
+            copying(copy,x);
+           insert_bylast(list3,copy);
+            x= x->next;
+        }
+        node fin1; fin1.numofwords = -1; insert_bylast(list2,&fin1);
+        node fin2; fin2.numofwords = -1; insert_bylast(list3,&fin1);
+
+
+        x= lists->header;
+        for(i=0; i<p;i++)
+            x = x->next;
+
+        node* x1 = list2->header;
+        node* x2 = list3->header;
+        j=p; k= q+1;
+        for(i=p;i<r+1;i++){
+            if(x1->numofwords >= x2->numofwords){
+                copying(x,x1);
+                x1 = x1->next; j++;
+            }
+            else{
+                copying(x,x2);
+                x2= x2->next; k++;
+            }
+             x= x->next;
+        }
+  free(list2); free(list3);
+
+  }
+
+
+   void merge_bywords(wordList* lists, int p, int q, int r){
+        int i;
+        wordList* list2 = (wordList*)malloc(sizeof(wordList)); list2->header = NULL; list2->last = NULL;
+        wordList* list3 = (wordList*)malloc(sizeof(wordList)); list3->header = NULL; list3->last = NULL;
+
+        wordnode* x = lists->header;
+        for(i=0; i<p;i++) x = x->next; //x는 p번째.
+        int j=0,k=0;
+
+        for(i=p; i<q+1; i++){
+            wordnode* copy = (wordnode*)malloc(sizeof(wordnode));
+            copyingwords(copy,x);
+            insert_wordnode_bylast(list2,copy);
+            x= x->next;
+        }
+
+        for(i=q+1; i<r+1; i++){
+            wordnode* copy = (wordnode*)malloc(sizeof(wordnode));
+            copyingwords(copy,x);
+           insert_wordnode_bylast(list3,copy);
+            x= x->next;
+        }
+        wordnode fin1; fin1.numofword = -1; insert_wordnode_bylast(list2,&fin1);
+        wordnode fin2; fin2.numofword = -1; insert_wordnode_bylast(list3,&fin1);
+
+
+        x= lists->header;
+        for(i=0; i<p;i++)
+            x = x->next;
+
+        wordnode* x1 = list2->header;
+        wordnode* x2 = list3->header;
+        j=p; k= q+1;
+        for(i=p;i<r+1;i++){
+            if(x1->numofword >= x2->numofword){
+                copyingwords(x,x1);
+                x1 = x1->next; j++;
+            }
+            else{
+                copyingwords(x,x2);
+                x2= x2->next; k++;
+            }
+             x= x->next;
+        }
+  free(list2); free(list3);
+
+  }
+
+
+
+
+  void mergesort_words(List* lists, int p, int r){
+      if(p<r){
+        int q = (p+r)/2;
+        mergesort_words(lists,p,q);
+        mergesort_words(lists,q+1,r);
+        merge_words(lists,p,q,r);
+      }
+  }
+
+    void mergesort_bywords(List* lists, int p, int r){
+      if(p<r){
+        int q = (p+r)/2;
+        mergesort_bywords(lists,p,q);
+        mergesort_bywords(lists,q+1,r);
+        merge_bywords(lists,p,q,r);
+      }
+  }
+
+
+ void copying(node* fake, node* org){
+
+     fake->friendsid = org->friendsid;
+     strcpy(fake->id , org->id);
+     fake->numoffriends = org ->numoffriends;
+     fake->numofwords = org ->numofwords;
+     strcpy(fake ->screenname, org->screenname);
+     strcpy(fake->signtime, org->signtime);
+     fake->word = fake ->word;
+
+ }
+
+
+ void copyingwords(wordnode* fake, wordnode* org){
+
+    fake->numofword = org->numofword;
+    fake->whoissiad= org->whoissiad;
+    strcpy(fake->wordname,org->wordname);
+
+ }
+
+ void top5_most_tweeted_users(){
+    mergesort_words(&list, 0, user_num-1);
+    int l;
+    node* who = list.header;
+    for(l=1; l<6; l++){
+    printf("top %d : user %s %s tweeted %d times\n",l, who->screenname, who->id, who->numofwords); who = who->next;
+ }
+
+ }
+
+   void top5_max_tweeted_word(){
+    mergesort_bywords(&wordslist, 0, kindwords-1);
+    int l;
+    wordnode* who = wordslist.header;
+    for(l=1; l<6; l++){
+    printf("top %d : word %s is tweeted %d times\n",l, who->wordname, who->numofword); who = who->next;
+ }
+ }
+
+
+
+
+
+
+    void top5_max_tweeted_search(struct List* list){
+        node* x = list->header;
+        node* find;
+        int max1 = 0;
+        while (x!= NULL){
+            if(x->numofwords > max1) { find = x; max1 = x->numofwords;}
+            x = x->next;}
+        printf("top1 is %s :tweet %d times\n",find->screenname,max1);
+
+        x = list->header;
+        int max2 = 0;
+        while (x!= NULL){
+            if(x->numofwords > max2 && x->numofwords < max1) { find = x; max2 = x->numofwords;}
+            x = x->next;}
+        printf("top2 is %s :tweet %d times\n",find->screenname,max2);
+
+        x = list->header;
+        int max3 = 0;
+        while (x!= NULL){
+            if(x->numofwords > max3 && x->numofwords < max2) { find = x; max3 = x->numofwords;}
+            x = x->next;}
+        printf("top3 is %s :tweet %d times\n",find->screenname,max3);
+
+         x = list->header;
+        int max4 = 0;
+        while (x!= NULL){
+            if(x->numofwords > max4 && x->numofwords < max3) { find = x; max4 = x->numofwords;}
+            x = x->next;}
+        printf("top4 is %s :tweet %d times\n",find->screenname,max4);
+
+         x = list->header;
+        int max5 = 0;
+        while (x!= NULL){
+            if(x->numofwords > max5 && x->numofwords < max4) { find = x; max5 = x->numofwords;}
+            x = x->next;}
+        printf("top5 is %s :tweet %d times\n",find->screenname,max5);
+    }
+
+
+void display_who_said_it(char* str){
+    wordnode* x = wordslist.header;
+    while(x!=NULL && strcmp(x->wordname,str)!=0)
+        x = x -> next;
+    if(x==NULL) printf("no person tweeted that word\n");
+
+else{ Adj* a = x->whoissiad;
+    int num=1;
+    while(a!=NULL) {
+            printf("%d : this word tweeted by %s %s", num, a->id, a->next); num++;
+            a = a->next;
+    }
+
+}
+
+}
+
