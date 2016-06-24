@@ -622,11 +622,11 @@ int  remove_all_users_who_mentioned_a_word(char* string){
     while(ids!=NULL){
         node* remove = search(&list,ids->id);
         remove_friends(&list, remove);
-        deletenode(&list,remove);
+        deletenode(&list,remove); user_num--;
         ids = ids->next;
     } //node remove
 
-    delete_wordnode(&wordslist,x);
+    delete_wordnode(&wordslist,x); word_num--;
     printf("remove complete!\n");
     return 0;
 }
@@ -637,14 +637,18 @@ void remove_friends(struct List* lists, node* center){
     while(friends!=NULL){
         node* friendnode = search(&list,friends->id);
 
-        if(strcmp(friendnode->friendsid->id,center->id)==0)
+        if(strcmp(friendnode->friendsid->id,center->id)==0) {
             friendnode->friendsid = friendnode->friendsid->next;
+            friendnode->numoffriends--;
+        }
         else{
             Adj* temp = search_previd(friendnode->friendsid,center->id);
             if(temp!=NULL){
                 if(temp->next!=NULL)
                     temp->next = temp->next->next;
-                else temp->next = NULL;     }
+                else temp->next = NULL;
+                friendnode->numoffriends--;
+                }
         }
         friends = friends->next;
     }
