@@ -1,5 +1,7 @@
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct foruser{
 char id[50] ;
@@ -111,22 +113,31 @@ void insert_bylast(struct List* lists, struct node* node){
 
 node* search(struct List* list, char* id){
     node* x = list->header;
-    while (x!= NULL && strcmp(x->id,id)!= 0)
-        x = x->next;
+    while (x!= NULL){
+        int cmp = strcmp(x->id,id);
+        if(cmp!= 0) x= x->next;
+        else return x;
+    }
     return x;
     }
 
 wordnode* searchword(struct wordList* lists,char* word){
      wordnode* x = lists->header;
-     while(x!=NULL && strcmp(x->wordname,word)!=0)
-        x= x->next;
+     while(x!=NULL){
+        int cmp = strcmp(x->wordname,word);
+        if(cmp!=0) x= x->next;
+        else return x;
+     }
     return x;
     }
 
 Adj* searchid(struct Adj* lists,char* id){
     Adj* x = lists;
-    while (x!= NULL && strcmp(x->id,id)!= 0)
+    while (x!= NULL){
+        int cmp = strcmp(x->id,id);
+        if(cmp!=0)
         x = x->next;
+        else return x; }
     return x;
     }
 int min_friend_search(struct List* list){
@@ -162,6 +173,22 @@ int min_friend_search(struct List* list){
         return max;
     }
 
+int read_data_files();
+void display_statistics();
+void merge_words(struct List* lists, int p, int q, int r);
+void merge_bywords(struct wordList* lists, int p, int q, int r);
+void mergesort_words(struct List* lists, int p, int r);
+void mergesort_bywords(struct wordList* lists, int p, int r);
+void copying(struct node* fake, struct node* org);
+void copyingwords(struct wordnode* fake, struct wordnode* org);
+void top5_most_tweeted_users();
+void top5_max_tweeted_word();
+void top5_max_tweeted_search(struct List* list);
+Adj* pointer_of_whosaidit_ids;
+void display_who_said_it(char* str);
+void display_whosaidit_friends() ;
+
+
 List list; List yeonsei; wordList wordslist;
 int user_num, friends_num , word_num,i, kindwords;
 
@@ -178,16 +205,15 @@ display_statistics(); //1
 top5_max_tweeted_word();//2
 top5_max_tweeted_search(&list); //3
 top5_most_tweeted_users(); //3
-char* str = "@\n";
+char* str = "^^\n";
 display_who_said_it(str); //4
 display_whosaidit_friends();//5
-
 
     return 0;
 }
 
 
-   void read_data_files(){
+int read_data_files(){
 
   //open files
     FILE * user = fopen("user.txt","rt");
@@ -224,7 +250,8 @@ user_num=0, friends_num =0, word_num=0,i, kindwords=0;
         strcpy(node1->signtime,user1->signtime);
         strcpy(node1->screenname, user1->screenname);
         insert(&list, node1);
-        free(user1);
+
+
     }
 
   while(1)
@@ -241,7 +268,7 @@ user_num=0, friends_num =0, word_num=0,i, kindwords=0;
         a->next = temp_node->friendsid;
         temp_node->friendsid = a;
         temp_node->numoffriends++;
-        free(friends1);
+
     }
 
 while(1)
@@ -286,9 +313,9 @@ while(1)
     printf("Total friendship records: %d\n", friends_num);
     printf("Total tweets: %d\n", word_num);
 
-    }
+    return 0;}
 
-   void display_statistics(){
+void display_statistics(){
         int min, max;
         float average_friends = friends_num/user_num;
         printf("Average number of friends: %f\n",average_friends);
@@ -304,7 +331,7 @@ while(1)
         printf("Maximum tweets per user: %d\n",max);
     }
 
-  void merge_words(List* lists, int p, int q, int r){
+void merge_words(List* lists, int p, int q, int r){
         int i;
         List* list2 = (List*)malloc(sizeof(List)); list2->header = NULL; list2->last = NULL;
         List* list3 = (List*)malloc(sizeof(List)); list3->header = NULL; list3->last = NULL;
@@ -327,7 +354,7 @@ while(1)
             x= x->next;
         }
         node fin1; fin1.numofwords = -1; insert_bylast(list2,&fin1);
-        node fin2; fin2.numofwords = -1; insert_bylast(list3,&fin1);
+        node fin2; fin2.numofwords = -1; insert_bylast(list3,&fin2);
 
 
         x= lists->header;
@@ -353,7 +380,7 @@ while(1)
   }
 
 
-   void merge_bywords(wordList* lists, int p, int q, int r){
+void merge_bywords(wordList* lists, int p, int q, int r){
         int i;
         wordList* list2 = (wordList*)malloc(sizeof(wordList)); list2->header = NULL; list2->last = NULL;
         wordList* list3 = (wordList*)malloc(sizeof(wordList)); list3->header = NULL; list3->last = NULL;
@@ -404,7 +431,7 @@ while(1)
 
 
 
-  void mergesort_words(List* lists, int p, int r){
+void mergesort_words(List* lists, int p, int r){
       if(p<r){
         int q = (p+r)/2;
         mergesort_words(lists,p,q);
@@ -413,7 +440,7 @@ while(1)
       }
   }
 
-    void mergesort_bywords(List* lists, int p, int r){
+void mergesort_bywords(wordList* lists, int p, int r){
       if(p<r){
         int q = (p+r)/2;
         mergesort_bywords(lists,p,q);
@@ -423,7 +450,7 @@ while(1)
   }
 
 
- void copying(node* fake, node* org){
+void copying(node* fake, node* org){
 
      fake->friendsid = org->friendsid;
      strcpy(fake->id , org->id);
@@ -436,7 +463,7 @@ while(1)
  }
 
 
- void copyingwords(wordnode* fake, wordnode* org){
+void copyingwords(wordnode* fake, wordnode* org){
 
     fake->numofword = org->numofword;
     fake->whoissiad= org->whoissiad;
@@ -444,7 +471,7 @@ while(1)
 
  }
 
- void top5_most_tweeted_users(){
+void top5_most_tweeted_users(){
     mergesort_words(&list, 0, user_num-1);
     int l;
     node* who = list.header;
@@ -454,21 +481,18 @@ while(1)
 
  }
 
-   void top5_max_tweeted_word(){
+void top5_max_tweeted_word(){
     mergesort_bywords(&wordslist, 0, kindwords-1);
     int l;
     wordnode* who = wordslist.header;
     for(l=1; l<6; l++){
-    printf("top %d : word %s is tweeted %d times\n",l, who->wordname, who->numofword); who = who->next;
+    printf("top %d : %d times tweeted :: word %s",l, who->numofword, who->wordname); who = who->next;
  }
  }
 
 
 
-
-
-
-    void top5_max_tweeted_search(struct List* list){
+void top5_max_tweeted_search(struct List* list){
         node* x = list->header;
         node* find;
         int max1 = 0;
@@ -506,11 +530,13 @@ while(1)
         printf("top5 is %s :tweet %d times\n",find->screenname,max5);
     }
 
-Adj* pointer_of_whosaidit_ids;
 void display_who_said_it(char* str){
     wordnode* x = wordslist.header;
-    while(x!=NULL && strcmp(x->wordname,str)!=0)
-        x = x -> next;
+    while(x!=NULL){
+        int cmp = strcmp(x->wordname,str);
+        if(cmp!=0) x= x->next;
+        else break;
+    }
     pointer_of_whosaidit_ids = x->whoissiad;
     if(x==NULL) printf("no person tweeted that word\n");
 
