@@ -636,6 +636,7 @@ void remove_friends(struct List* lists, node* center){
     Adj* friends = center->friendsid;
     while(friends!=NULL){
         node* friendnode = search(&list,friends->id);
+        if(friendnode == NULL) break;
 
         if(strcmp(friendnode->friendsid->id,center->id)==0) {
             friendnode->friendsid = friendnode->friendsid->next;
