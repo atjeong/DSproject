@@ -1,0 +1,60 @@
+Select Menu: 아래 숫자를 입력하면 다음과 같은 작동을 한다.
+
+0. Read data files
+
+:파일을 읽고 total users, total friendship records, total tweets의 개수를 출력한다.
+*user file: 읽으면서 id에 따른 노드를 생성하고 그 노드에 screen name과 sign time을 저장한다.
+*friend file : 친구1-친구2의 형태의 id쌍을 받는다.
+1>친구1의 id를 가진 노드를 찾아서 친구목록(friendsid)에 친구2의 id를 추가한다. 
+2>친구2의 id를 가진 노드를 찾아서 자신을 좋아하는 친구목록(wholikesme)에 친구1의 id를 추가한다.
+*word file : tweet한 word와 time을 해당되는 id의 노드를 찾아서 word목록에  추가한다. + wordlist에 각 word들과 tweet한 사람의 id를 저장한다.
+
+1. display statistics
+
+:average number of friends, minimum friends, maximum number of friends, average tweets per user, minimum tweets per user, maximum tweets per user를 각각 출력한다.
+
+2. Top 5 most tweeted words
+
+:가장 많이 tweet된 words와 그 개수를 5위까지 보여준다.
+
+3. Top 5 most tweeted users
+
+:가장 많이 tweet한 유저의 아이디와 그 개수를 5위까지 보여준다.
+
+4. Find users who tweeted a word (e.g., ’연세대’)
+
+:단어를 입력하면 그 단어를 말한 user들을 보여준다. 
+*만약 어떤 유저가 여러 번 그 단어를 말했더라도 한번만 보여준다. 
+*만약 입력된 단어가 한번도 tweet되지 않은 단어라면 “no person tweeted that word”가 출력된다.
+
+5. Find all people who are friends of the above users
+
+:4번에서 입력된 단어를 말한 유저들의 친구들의 목록을 보여준다.
+* 만약 4번에서 입력된 단어가 한번도 tweet되지 않은 단어라면 “no person who tweeted the word”가 출력된다.
+* tweet한사람의 이름이 먼저 나오고 그 뒤에 친구 목록이 출력된다. 
+* 만약 입력된 단어를 tweet한 사람에게 친구가 없다면 “there are no friends of him”이 출력된다.
+
+6. Delete all mentions of a word
+
+:단어를 입력받고 이 단어의 mention을 모두 지운다.
+* 입력된 단어가 한번도 tweet되지 않았다면 there are no person that tweeted that을 출력한다.
+
+7. Delete all users who mentioned a word
+
+:단어를 입력받은 후 그 단어를 tweet한 사람을 모두 지운다.
+* 입력된 단어를 tweet한 사람이 없다면, “there are no person that tweeted that”이 출력된다.
+*이 단어를 tweet한 사람의 id는 자신이 친구 추가한 친구들의 자신을 친구추가한 목록(wholikesme)에서도 사라진다.
+* 이 단어를 tweet한 사람의 id는 자신을 친구 추가한 친구들의 친구목록(friendsid)에서도 사라진다.
+* 이 단어를 말한 사람이 없어졌으니 wordlist에서 이 단어도 사라지게 된다.
+
+8. Find strongly connected components
+
+9. Find shortest path from a given user 
+
+:ueser id를 입력하면 그 아이디에서 출발해서 shortest path top5를 출력한다.
+*입력된 아이디를 가진 사람이 없으면 “there are no person that has the id”가 출력된다.
+
+99. Quit
+
+: 끝난다.
+
