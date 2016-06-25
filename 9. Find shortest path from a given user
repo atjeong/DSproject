@@ -861,15 +861,20 @@ void merge_bygraphnum(List* lists, int p, int q, int r){
       if(start == NULL ) {printf("there are no person that has the id\n"); return 0;}
       dik(&list, start);
       mergesort_bygraphnum(&list, 0, user_num-1);
-      node* s = list.last;
-      while(s->graphnum != 0)  s= s->prev;
-      printf("from %s : \n", s->id);
-      s= s->prev;
-      int l,i;
+      node* s = list.header;
+      int l;
       for(l=0;l<5;l++){
         if(s==NULL){printf("no more graph that linked!"); break;}
-        for(i=0; i<5; i++)
-        printf("from %s distance %s : %d distance to %s", s->graphnum, s->id);
-        s= s->prev;
+        printf("top %d : time is %d and id is %s",l+1,s->graphnum,s->id);
+
+        node* tempparent = s->parent;
+        printf("BACK TRACKING START!\n-> graphnum %d : %s",s->graphnum, s->id);
+
+        while(tempparent!=NULL){
+        printf("-> graphnum %d : %s", tempparent->graphnum ,tempparent->id);
+        tempparent = tempparent->parent;
+        }
+        printf("FINISH\n");
+        s = s->next;
       }
-  } //109606650
+  }
