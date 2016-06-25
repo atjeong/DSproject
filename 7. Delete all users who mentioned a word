@@ -34,11 +34,16 @@ typedef struct node{
     char signtime[50];
     char screenname[50];
     Adj* friendsid;
+    Adj* wholikesme;
+    int numoflikesme;
     Adj2* word;
     struct node* next;
     struct node* prev;
     int numoffriends;
     int numofwords;
+    int graphnum;
+    int color;
+    struct node* parent;
 }node;
 
 typedef struct wordnode{
@@ -56,6 +61,11 @@ void initial(node* node){
     node->prev= NULL;
     node->numoffriends=0;
     node->numofwords = 0;
+    node->graphnum = -1;
+    node->color = 0;
+    node->parent = NULL;
+    node->numoflikesme =0;
+    node->wholikesme=0;
 }
 void initialize(wordnode* node){
     node->whoissiad = NULL;
@@ -251,7 +261,11 @@ int main()
             remove_all_users_who_mentioned_a_word(str);
             break;
     case 8: break;
-    case 9: break;
+    case 9: printf("please insert id , then we will show its shortest path top5 : ");
+            scanf("%s",str);
+            strcat( str, "\n");
+            shortest_path(str);
+            break;
     case 99: goto lable; break;
     default: break;
     }
@@ -319,6 +333,13 @@ user_num=0, friends_num =0, word_num=0,i, kindwords=0;
         a->next = temp_node->friendsid;
         temp_node->friendsid = a;
         temp_node->numoffriends++;
+
+        node* temp_node2 = search(&list,friends1->friendsid);
+        Adj* aa = (Adj *)malloc(sizeof(Adj));
+        strcpy(aa->id ,friends1->myid);
+        aa->next = temp_node2->wholikesme;
+        temp_node2->wholikesme = aa;
+        temp_node2->numoflikesme++;
 
     }
 
@@ -455,7 +476,7 @@ void merge_bywords(wordList* lists, int p, int q, int r){
             x= x->next;
         }
         wordnode fin1; fin1.numofword = -1; insert_wordnode_bylast(list2,&fin1);
-        wordnode fin2; fin2.numofword = -1; insert_wordnode_bylast(list3,&fin1);
+        wordnode fin2; fin2.numofword = -1; insert_wordnode_bylast(list3,&fin2);
 
 
         x= lists->header;
@@ -502,7 +523,7 @@ void mergesort_bywords(wordList* lists, int p, int r){
   }
 
 
-void copying(node* fake, node* org){
+void copying(struct node* fake,struct node* org){
 
      fake->friendsid = org->friendsid;
      strcpy(fake->id , org->id);
@@ -510,8 +531,12 @@ void copying(node* fake, node* org){
      fake->numofwords = org ->numofwords;
      strcpy(fake ->screenname, org->screenname);
      strcpy(fake->signtime, org->signtime);
-     fake->word = fake ->word;
-
+     fake->word = org ->word;
+     fake->color = org->color;
+     fake->graphnum = org->graphnum;
+     fake->parent = org->parent;
+     fake->wholikesme = org->wholikesme;
+     fake->numoflikesme = org->numoflikesme;
  }
 
 
@@ -528,7 +553,7 @@ void top5_most_tweeted_users(){
     int l;
     node* who = list.header;
     for(l=1; l<6; l++){
-    printf("top %d : user %s %s tweeted %d times\n",l, who->screenname, who->id, who->numofwords); who = who->next;
+    printf("top %d : tweeted %d times and user id :%s",l, who->numofwords, who->id); who = who->next;
  }
 
  }
@@ -628,6 +653,7 @@ int  remove_all_users_who_mentioned_a_word(char* string){
     while(ids!=NULL){
         node* remove = search(&list,ids->id);
         remove_friends(&list, remove);
+        remove_semifriends(&list, remove);
         word_num = word_num - remove->numofwords;
         deletenode(&list,remove); user_num--;
         ids = ids->next;
@@ -640,7 +666,7 @@ int  remove_all_users_who_mentioned_a_word(char* string){
 
 
 void remove_friends(struct List* lists, node* center){
-    Adj* friends = center->friendsid;
+    Adj* friends = center->wholikesme;
     while(friends!=NULL){
         node* friendnode = search(&list,friends->id);
         if(friendnode == NULL) break;
@@ -656,6 +682,29 @@ void remove_friends(struct List* lists, node* center){
                     temp->next = temp->next->next;
                 else temp->next = NULL;
                 friendnode->numoffriends--;
+                }
+        }
+        friends = friends->next;
+    }
+}
+
+void remove_semifriends(struct List* lists, node* center){
+    Adj* friends = center->friendsid;
+    while(friends!=NULL){
+        node* friendnode = search(&list,friends->id);
+        if(friendnode == NULL) break;
+
+        if(strcmp(friendnode->wholikesme->id,center->id)==0) {
+            friendnode->wholikesme = friendnode->wholikesme->next;
+            friendnode->numoffriends--;
+        }
+        else{
+            Adj* temp = search_previd(friendnode->wholikesme,center->id);
+            if(temp!=NULL){
+                if(temp->next!=NULL)
+                    temp->next = temp->next->next;
+                else temp->next = NULL;
+                friendnode->numoflikesme--;
                 }
         }
         friends = friends->next;
@@ -702,7 +751,109 @@ void remove_mentions(node* person, char* string){
         }
 }
 
+void bfs(struct List* lists, node* start){
+    start->color = 1;
+    start->graphnum=0;
+    start->parent = NULL;
+    List* q = (List*)malloc(sizeof(List)); q->header = NULL; q->last = NULL;
+
+    insert_bylast(q, start);
+    while (q->header!= NULL) {
+        node* fromqueue = deletenode(q, q->header);
+        Adj* adj_v = fromqueue->friendsid;
+        while(adj_v!= NULL) {
+                node* friends = search(&list,adj_v->id);
+                if(friends==NULL) {adj_v = adj_v ->next; continue;}
+                if (friends->color == 0) { printf("in");
+                    friends->color = 1;
+                    friends->graphnum = fromqueue->graphnum + friends->numoffriends;
+                    friends->parent = fromqueue;
+                    node* copy = (node*)malloc(sizeof(node));
+                    copying(copy,friends);
+                    insert_bylast(q, copy); }
+                    adj_v = adj_v->next;
+            }
+            fromqueue->color = 2;
+    }
+}
 
 
 
+void mergesort_bygraphnum(struct List* lists, int p, int r){
+      if(p<r){
+        int q = (p+r)/2;
+        mergesort_bygraphnum(lists,p,q);
+        mergesort_bygraphnum(lists,q+1,r);
+        merge_bygraphnum(lists,p,q,r);
+      }
+  }
 
+
+
+void merge_bygraphnum(List* lists, int p, int q, int r){
+        int i;
+        List* list2 = (List*)malloc(sizeof(List)); list2->header = NULL; list2->last = NULL;
+        List* list3 = (List*)malloc(sizeof(List)); list3->header = NULL; list3->last = NULL;
+
+        node* x = lists->header;
+        for(i=0; i<p;i++) x = x->next; //x는 p번째.
+        int j=0,k=0;
+
+        for(i=p; i<q+1; i++){
+            node* copy = (node*)malloc(sizeof(node));
+            copying(copy,x);
+            insert_bylast(list2,copy);
+            x= x->next;
+        }
+
+        for(i=q+1; i<r+1; i++){
+            node* copy = (node*)malloc(sizeof(node));
+            copying(copy,x);
+           insert_bylast(list3,copy);
+            x= x->next;
+        }
+
+        node fin1; fin1.graphnum= -3; insert_bylast(list2,&fin1);
+        node fin2; fin2.graphnum = -3; insert_bylast(list3,&fin2);
+
+
+        x= lists->header;
+        for(i=0; i<p;i++)
+            x = x->next;
+
+        node* x1 = list2->header;
+        node* x2 = list3->header;
+        j=p; k= q+1;
+
+        for(i=p;i<r+1;i++){
+            if(x1->graphnum >= x2->graphnum){
+                copying(x,x1);
+                x1 = x1->next; j++;
+            }
+            else{
+                copying(x,x2);
+                x2= x2->next; k++;
+            }
+             x= x->next;
+        }
+  free(list2); free(list3);
+
+  }
+
+  int shortest_path(char* str){
+      node* start = search(&list,str);
+      if(start == NULL ) {printf("there are no person that has the id\n"); return 0;}
+
+      bfs(&list, start);
+      mergesort_bygraphnum(&list, 0, user_num-1);printf("!!");
+      node* s = list.last;
+      while(s->graphnum!=-10) s= s->prev;
+      printf("from %d distance %s : %d distance to %s", s->graphnum, s->id);
+      s= s->prev;
+      int l;
+      for(l=0;l<5;l++){
+        if(s==NULL){printf("no more graph that linked!"); break;}
+        printf("from %d distance %s : %d distance to %s", s->graphnum, s->id);
+        s= s->prev;
+      }
+  } //109606650
