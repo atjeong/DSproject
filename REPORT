@@ -1,0 +1,21 @@
+∗ What data structure you chose and why
+-DOUBLY LINKED LIST : 전체적인 구조에 사용했다. (List, wordList)
+                      NODE들의 삭제/ 삽입이 쉽기때문이다.
+                      header 말고도 last도 지정해서 뒤로 insert하는 것도 가능하게 했다.
+                      top 5 등 리스트 정렬을 해야 할때는 merge sort를 쉽게 구현 할 수 있고 빠를것이라고 생각해서 선택했다.
+-LINKED LIST :  friendsid(친구목록), word(트윗목록)에 사용했다. 
+                doubly linked list보다 간단하기 때문이고 이동이 별로 없을것이라고 생각해서 선택했다.
+                
+
+∗ What is your expected performance
+-mergesort : O(nlogn)의 성능을 기대했다.
+-doubly linked list : last도 지정해서 앞이나 뒤에서 삽입/삭제가 가능하게했다. O(n)의 성능을 기대했다.
+                      단순 연결리스트보다 더 빠른 performance를 기대했다.
+-wordslist :단어에 대한 정보에 그 단어를 말한 사람의 id를 둔 리스트를 따로 하나 더 작성했다.
+            그냥 id에 따른 노드에서 단어목록(트윗목록)을 뒤지지 않고도 누가 이 단어를 말했는지 바로 알수 있도록해서 더 빠른 속도로
+            그 사람의 트윗목록 삭제 혹은 그 단어를 트윗한 사람 삭제 또는 탐색이 더 빨라질 거라고 기대했다.
+                      
+∗ How would you improve the system in the future
+-search할때 처음부터 끝까지 다 살펴보아서 시간이 오래걸렸던것 같다. 
+  balanced tree 을 사용하면 자동적으로 계속 정렬이 되니까 정렬할 시간도 줄고 search하는 시간도 훨씬 빨라질 것 같다.
+
