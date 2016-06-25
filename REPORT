@@ -3,7 +3,7 @@
                       NODE들의 삭제/ 삽입이 쉽기때문이다.
                       header 말고도 last도 지정해서 뒤로 insert하는 것도 가능하게 했다.
                       top 5 등 리스트 정렬을 해야 할때는 merge sort를 쉽게 구현 할 수 있고 빠를것이라고 생각해서 선택했다.
--LINKED LIST :  friendsid(친구목록), word(트윗목록), wholikesme(나를 친구추가한 목록)에 사용했다. 
+-LINKED LIST :  friendsid(친구목록), word(트윗목록), wholikesme(자신을 친구추가한 목록)에 사용했다. 
                 doubly linked list보다 간단하기 때문이고 이동이 별로 없을것이라고 생각해서 선택했다.
                 
 
