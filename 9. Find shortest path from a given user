@@ -751,7 +751,7 @@ void remove_mentions(node* person, char* string){
         }
 }
 
-void dik(struct List* lists, node* start){
+void dik(struct List* lists, node* start){ int n=0;
     start->color = 1;
     start->graphnum=0;
     start->parent = NULL;
@@ -759,25 +759,37 @@ void dik(struct List* lists, node* start){
 
     node* copy = (node*)malloc(sizeof(node));
     copying(copy,start);
-    insert_bylast(q, copy);
+    insert_bylast(q, copy); n++;
 
     while (q->header!= NULL) {
-        node* fromqueue = deletenode(q, q->header);
-        
+        node* fromqueue = deletenode(q, q->last);  n--;
         Adj* adj_v = fromqueue->friendsid;
         while(adj_v!= NULL) {
                 node* friends = search(&list,adj_v->id);
                 if(friends==NULL) {adj_v = adj_v ->next; continue;}
+
                 if (friends->color == 0) {
                     friends->color = 1;
                     friends->graphnum = fromqueue->graphnum + friends->numoffriends;
                     friends->parent = fromqueue;
                     node* copy = (node*)malloc(sizeof(node));
                     copying(copy,friends);
-                    insert_bylast(q, copy); }
+                    insert_bylast(q, copy); n++; }
+
+                else if(friends->color==1){
+                        if(friends->graphnum > fromqueue->graphnum + friends->numoffriends){
+                            friends->graphnum = fromqueue->graphnum + friends->numoffriends;
+                            friends->parent = fromqueue;
+                            node* copy = search(q,friends->id);
+                            copy->graphnum = friends->graphnum;
+                            copy->parent = friends->parent;
+                            }
+                }
+
                     adj_v = adj_v->next;
             }
             fromqueue->color = 2;
+            mergesort_bygraphnum(q,0,n-1);
     }
 }
 
@@ -847,8 +859,7 @@ void merge_bygraphnum(List* lists, int p, int q, int r){
   int shortest_path(char* str){
       node* start = search(&list,str);
       if(start == NULL ) {printf("there are no person that has the id\n"); return 0;}
-
-      bfs(&list, start);
+      dik(&list, start);
       mergesort_bygraphnum(&list, 0, user_num-1);
       node* s = list.last;
       while(s->graphnum != 0)  s= s->prev;
