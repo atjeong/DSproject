@@ -25,6 +25,7 @@ typedef struct Adj {
 } Adj;
 typedef struct Adj2 {
   char word[1000];
+  char time[50];
   struct Adj2* next;
 } Adj2;
 
@@ -240,7 +241,10 @@ int main()
             display_who_said_it(str);
             break;
     case 5: display_whosaidit_friends(); break;
-    case 6: break;
+    case 6: printf("If you want to delete mentions of a word, Insert the word : ");
+            scanf("%s",str);
+            strcat( str, "\n");
+            remove_all_mentions_a_word(str);break;
     case 7: printf("If you want to delete who tweeted a word, Insert the word : ");
             scanf("%s",str);
             strcat( str, "\n");
@@ -329,6 +333,7 @@ while(1)
         node* temp_node = search(&list,word1.userid);
         Adj2* a = (Adj2*)malloc(sizeof(Adj2));
         strcpy(a->word ,word1.word);
+        strcpy(a->time ,word1.time);
         a->next = temp_node->word;
         temp_node->word = a;
         temp_node->numofwords++;
@@ -591,6 +596,7 @@ void display_who_said_it(char* str){
             }
 
         }
+    printf("---If one person tweeted the word many times, we omitted it for your convenience!----\n");
 
 }
 
@@ -622,11 +628,12 @@ int  remove_all_users_who_mentioned_a_word(char* string){
     while(ids!=NULL){
         node* remove = search(&list,ids->id);
         remove_friends(&list, remove);
+        word_num = word_num - remove->numofwords;
         deletenode(&list,remove); user_num--;
         ids = ids->next;
     } //node remove
 
-    delete_wordnode(&wordslist,x); word_num--;
+    delete_wordnode(&wordslist,x); kindwords--;
     printf("remove complete!\n");
     return 0;
 }
@@ -656,6 +663,44 @@ void remove_friends(struct List* lists, node* center){
 }
 
 
+
+
+int  remove_all_mentions_a_word(char* string){
+    wordnode* x = searchword(&wordslist, string);
+    if(x==NULL) {printf("there are no person that tweeted that\n"); return 0;}
+
+    Adj* ids = x->whoissiad;
+    while(ids!=NULL){
+        node* person = search(&list,ids->id);
+        remove_mentions(person,string); word_num--;
+        ids = ids->next;
+    }
+
+    delete_wordnode(&wordslist,x); kindwords--;
+    printf("remove mentions complete!\n");
+    return 0;
+}
+
+void remove_mentions(node* person, char* string){
+    Adj2* prevmention = person->word;
+    Adj2* mention = prevmention->next;
+    if(strcmp(prevmention->word,string)==0){
+            person->word = mention;
+            person->numofwords--;
+        }
+
+        else{
+            while(prevmention!=NULL){
+                if(mention==NULL) break;
+                else{
+                        if(strcmp(mention->word,string)==0){
+                            prevmention->next = mention->next;  person->numofwords--;}
+
+                        prevmention= prevmention->next; mention = prevmention->next;
+                }
+            }
+        }
+}
 
 
 
