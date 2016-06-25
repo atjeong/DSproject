@@ -672,7 +672,7 @@ int  remove_all_mentions_a_word(char* string){
         node* person = search(&list,ids->id);
         remove_mentions(person,string);
         ids = ids->next;
-    } //node remove
+    } /
 
     delete_wordnode(&wordslist,x); word_num--;
     printf("remove mentions complete!\n");
@@ -680,24 +680,24 @@ int  remove_all_mentions_a_word(char* string){
 }
 
 void remove_mentions(node* person, char* string){
-    Adj2* mention = person->word;
-    Adj2* nextm = mention->next;
-    while(mention!=NULL){
-        if(strcmp(mention->word,string)==0){
-            person->word = nextm;
+    Adj2* prevmention = person->word;
+    Adj2* mention = prevmention->next;
+    if(strcmp(prevmention->word,string)==0){
+            person->word = mention;
             person->numofwords--;
         }
+
         else{
-            if(mention!=NULL){
-                if(mention->next!=NULL)
-                    mention->next = mention->next->next;
-                else mention->next = NULL;
-                person->numofwords--;
+            while(prevmention!=NULL){
+                if(mention==NULL) break;
+                else{
+                        if(strcmp(mention->word,string)==0){
+                            prevmention->next = mention->next;  person->numofwords--;}
+
+                        prevmention= prevmention->next; mention = prevmention->next;
                 }
+            }
         }
-        mention= mention->next; nextm = mention->next;
-        if(nextm==NULL) break;
-    }
 }
 
 
